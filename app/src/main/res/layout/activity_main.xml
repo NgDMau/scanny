@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/notification"
+        android:layout_width="match_parent"
+        android:layout_height="63dp"
+        android:text="@string/blank" />
+
+    <TextView
+        android:id="@+id/list_devices"
+        android:layout_width="match_parent"
+        android:layout_height="194dp"
+        android:text="@string/blank" />
+
+    <Button
+        android:id="@+id/paired_devices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="bonded_devices"
+        android:text="@string/paired_devices" />
+
+    <Button
+        android:id="@+id/connect"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="connect_devices_actively"
+        android:text="@string/connect_button" />
+
+    <Button
+        android:id="@+id/receive"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="connect_devices_passively"
+        android:text="@string/receive_button" />
+
+    <TextView
+        android:id="@+id/status"
+        android:layout_width="match_parent"
+        android:layout_height="147dp"
+        android:text="@string/blank" />
+</LinearLayout>

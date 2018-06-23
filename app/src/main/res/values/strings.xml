@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Bluetooth3</string>
+    <string name="blank">...</string>
+    <string name="check_button">check</string>
+    <string name="connect_button">connect</string>
+    <string name="receive_button">receive</string>
+    <string name="paired_devices">Paired Devices</string>
+</resources>
