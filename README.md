@@ -13,5 +13,8 @@ ExecStart=/usr/lib/bluetooth/bluetoothd -C
 and then running sudo sdptool add SP .
 After that, reboot your Pi and run the python file above again.
 If it displays: Waiting for bluetooth connection at port 1..., then run the "bluetooth3" app on your android phone and
-press Conenct button. If you see: device connected successfully !!! That m
+press Conenct button. If you see: device connected successfully !!! then you just got succeeded.
+
+Type any meesage you want to send to the Pi, the click button "Send". The content will disappear after transferred.
+In the terminal of the Pi, you will see "received[message content]".
 
