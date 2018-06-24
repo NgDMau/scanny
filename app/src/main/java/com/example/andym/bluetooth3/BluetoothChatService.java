@@ -5,109 +5,105 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
+import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.UUID;
 
 public class BluetoothChatService {
 
-    private static final String TAG    = "BluetoothChatService";
+    private static final String TAG1 = "MY_APP_DEBUG_TAG";
+    private Handler mHandler;
 
-    private static final String NAME   = "BluetoothChatSecure";
-    private static final UUID MY_UUID  =
-            UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
-
-    private final BluetoothAdapter mAdapter = null;
-    private final Handler mHandler = null ;
-    private TextView notification, list_devices;
-
-
-
-    private class AcceptThread extends Thread{
-        private final BluetoothServerSocket mmServerSocket;
-        private String mSocketType;
-
-        public AcceptThread(){
-            BluetoothServerSocket tmp = null;
-
-            try{
-                tmp = mAdapter.listenUsingInsecureRfcommWithServiceRecord(NAME,MY_UUID);
-            } catch (IOException e){
-                Log.e(TAG,"listen() failed",e);
-            }
-            mmServerSocket = tmp;
-        }
-
-        public void run(){
-            BluetoothSocket socket = null;
-            while (true){
-                try{
-                    socket = mmServerSocket.accept();
-                }catch (IOException e){
-                    Log.e(TAG,"accept() failed",e);
-                    break;
-                }
-
-                if(socket != null){
-                    // need connected function here
-
-                    break;
-                }
-            }
-        }
-
-        public void cancel(){
-            Log.d(TAG, "Socket Type cancel");
-            try{
-                mmServerSocket.close();
-            } catch (IOException e){
-                Log.e(TAG,"close() failed", e);
-            }
-        }
+    private interface MessageConstants{
+        public static final int MESSAGE_READ = 0;
+        public static final int MESSAGE_WRITE = 1;
+        public static final int MESSAGE_TOAST = 2;
     }
 
-    private class ConnectThread extends Thread{
-        private final BluetoothSocket mmSocket;
-        private final BluetoothDevice mmDevice;
+    public BluetoothSocket theSocket;
 
-        public ConnectThread(BluetoothDevice device){
-            mmDevice = device;
-            BluetoothSocket tmp = null;
+    public void SEND_MESSAGE(String message){
+        byte[] send = message.getBytes();
+        ConnectedThread mConnectedThread = new ConnectedThread(theSocket);
+        mConnectedThread.start();
+        mConnectedThread.write(send);
+    }
+
+
+    private class ConnectedThread extends Thread{
+        private final BluetoothSocket mmSocket;
+        private final InputStream mmInStream;
+        private final OutputStream mmOutStream;
+        private byte[] mmBuffer;
+
+        public ConnectedThread(BluetoothSocket socket){
+            mmSocket = socket;
+            InputStream tmpIn = null;
+            OutputStream tmpOut = null;
 
             try{
-                tmp = device.createInsecureRfcommSocketToServiceRecord(MY_UUID);
+                tmpIn = socket.getInputStream();
             } catch (IOException e){
-                Log.e(TAG,"create() failed", e);
+                Log.e(TAG1, "Error occurred when creating input stream", e);
             }
-            mmSocket = tmp;
+            try{
+                tmpOut = socket.getOutputStream();
+            } catch (IOException e){
+                Log.e(TAG1, "Error occurred when creating output stream", e);
+            }
+
+            mmInStream = tmpIn;
+            mmOutStream= tmpOut;
         }
 
         public void run(){
-            mAdapter.cancelDiscovery();
-            try{
-                mmSocket.connect();
-            } catch (IOException e){
+            mmBuffer = new byte[1024];
+            int numBytes;
+            while (true){
                 try{
-                    mmSocket.close();
-                } catch (IOException e2){
-                    Log.e(TAG, "close() failure");
+                    numBytes = mmInStream.read(mmBuffer);
+                    Message readMsg = mHandler.obtainMessage(
+                            MessageConstants.MESSAGE_READ, numBytes, -1,mmBuffer);
+                    readMsg.sendToTarget();
+                } catch (IOException e){
+                    Log.d(TAG1, "Input stream was disconnected",e);
+                    break;
                 }
-                return;
+            }
+        }
+
+        public void write(byte[] bytes){
+            try {
+                mmOutStream.write(bytes);
+                Message writtenMsg = mHandler.obtainMessage(
+                        MessageConstants.MESSAGE_WRITE, -1, -1, mmBuffer);
+                writtenMsg.sendToTarget();
+            } catch (IOException e){
+                Log.e(TAG1,"Error occurred when sending data",e);
+                Message writeErrorMsg =
+                        mHandler.obtainMessage(MessageConstants.MESSAGE_TOAST);
+                Bundle bundle = new Bundle();
+                bundle.putString("toast","Couldnt send data to the other device");
+                writeErrorMsg.setData(bundle);
+                mHandler.sendMessage(writeErrorMsg);
             }
         }
 
         public void cancel(){
             try{
                 mmSocket.close();
-            } catch (IOException e){
-                Log.e(TAG, "close() fialed", e);
+            }catch (IOException e){
+                Log.e(TAG1, "Couldn't close the connect socket",e );
             }
         }
     }
-
 }

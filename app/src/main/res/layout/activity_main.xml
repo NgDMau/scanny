@@ -16,7 +16,7 @@
     <TextView
         android:id="@+id/list_devices"
         android:layout_width="match_parent"
-        android:layout_height="194dp"
+        android:layout_height="122dp"
         android:text="@string/blank" />
 
     <Button
@@ -43,6 +43,23 @@
     <TextView
         android:id="@+id/status"
         android:layout_width="match_parent"
-        android:layout_height="147dp"
+        android:layout_height="38dp"
         android:text="@string/blank" />
+
+    <Button
+        android:id="@+id/send"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="send_message"
+        android:text="@string/send_button" />
+
+    <EditText
+        android:id="@+id/message"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/message_hint"
+        android:inputType="textPersonName"
+        android:text="@string/blank" />
+
 </LinearLayout>

@@ -8,10 +8,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.MainThread;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextPaint;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -19,6 +21,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
 import java.util.Set;
 import java.util.UUID;
@@ -26,6 +30,7 @@ import java.util.UUID;
 public class MainActivity extends AppCompatActivity {
 
     private TextView notification, list_devices, status;
+    private EditText message;
     private Button check_blue, connect_blue, receive_blue;
     private static final int REQUEST_ENABLE_BT = 1;
     private static BluetoothDevice mDEVICE = null ;
@@ -33,6 +38,19 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG  = "tag_of_my_app";
     private static final UUID MY_UUID= UUID.fromString("507096b2-7500-11e8-adc0-fa7ae01bbebc");
     private BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    private BluetoothChatService mChatService = null;
+    private static final String TAG1 = "MY_APP_DEBUG_TAG";
+    private Handler mHandler;
+    private OutputStream outStream;
+    private static InputStream inStream;
+    private static BluetoothSocket theSocket;
+
+    private interface MessageConstants{
+        public static final int MESSAGE_READ = 0;
+        public static final int MESSAGE_WRITE = 1;
+        public static final int MESSAGE_TOAST = 2;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         notification = findViewById(R.id.notification);
         list_devices = findViewById(R.id.list_devices);
         status       = findViewById(R.id.status);
-
+        message      = findViewById(R.id.message);
         if (mBluetoothAdapter == null) {
             notification.setText("Bluetooth is not supported");
         } else notification.setText("Bluetooth is supported");
@@ -120,6 +138,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void send_message(View view) throws Exception {
+        String message_content =  message.getText().toString();
+        ConnectedThread mConnectedThread = new ConnectedThread();
+        mConnectedThread.write(message_content);
+        message.setText("");
+
+    }
+
     private class AcceptThread extends Thread {
         private final BluetoothServerSocket mmServerSocket;
 
@@ -176,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         private final BluetoothSocket mmSocket;
 
 
-        public ConnectThread(BluetoothDevice device){
+        public ConnectThread(BluetoothDevice device) throws IOException {
             BluetoothSocket tmp = null;
             mmDevice = device;
 
@@ -188,6 +214,8 @@ public class MainActivity extends AppCompatActivity {
 
             mmSocket = tmp;
             if(mmSocket != null) status.setText("connecting...");
+            outStream = mmSocket.getOutputStream();
+            inStream  = mmSocket.getInputStream();
         }
 
         public void run(){
@@ -221,20 +249,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public boolean createBond(BluetoothDevice btDevice)
-            throws Exception
-    {
-        Class class1 = Class.forName("android.bluetooth.BluetoothDevice");
-        Method createBondMethod = class1.getMethod("createBond");
-        Boolean returnValue = (Boolean) createBondMethod.invoke(btDevice);
-        return returnValue.booleanValue();
-    }
-
     private void makeDiscoverable() {
         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
         startActivity(discoverableIntent);
         Log.i("Log", "Discoverable ");
+    }
+
+    private class ConnectedThread extends Thread{
+
+
+        public void write(String s) throws Exception{
+            outStream.write(s.getBytes());
+        }
+
+        public void run(){
+            final int BUFFER_SIZE = 1024;
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int bytes = 0;
+            int b     = BUFFER_SIZE;
+            while (true){
+                try{
+                    bytes = inStream.read(buffer,bytes,BUFFER_SIZE - bytes);
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
 
 

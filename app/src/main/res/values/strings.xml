@@ -5,4 +5,6 @@
     <string name="connect_button">connect</string>
     <string name="receive_button">receive</string>
     <string name="paired_devices">Paired Devices</string>
+    <string name="send_button">send</string>
+    <string name="message_hint">type your message here</string>
 </resources>
