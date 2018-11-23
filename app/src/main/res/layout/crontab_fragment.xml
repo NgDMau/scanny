@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp">
+
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/change_DPI_guide" />
+
+    <EditText
+        android:id="@+id/textDPI"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="DIP: ex500"
+        android:inputType="textPersonName" />
+
+    <Button
+        android:id="@+id/changeDPI"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="change dpi" />
+
+    <EditText
+        android:id="@+id/textTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="TIME"
+        android:inputType="date" />
+
+    <Button
+        android:id="@+id/changeTime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="CHANGE TIME" />
+</LinearLayout>

@@ -1,10 +1,25 @@
 <resources>
-    <string name="app_name">Bluetooth3</string>
-    <string name="blank">...</string>
-    <string name="check_button">check</string>
-    <string name="connect_button">connect</string>
-    <string name="receive_button">receive</string>
-    <string name="paired_devices">Paired Devices</string>
-    <string name="send_button">send</string>
-    <string name="message_hint">type your message here</string>
+    <string name="app_name">Scanny</string>
+    <string name="signup">Dont have an account?</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="not_connected">Not Connected</string>
+    <string name="title_paired_devices">Paired devices</string>
+    <string name="title_other_devices">Other devices</string>
+    <string name="button_scan">Scan</string>
+    <string name="none_paired">Not paired</string>
+    <string name="scanning">Scanning</string>
+    <string name="select_device">Select device</string>
+    <string name="none_found">Not found</string>
+    <string name="secure_connect">Connect</string>
+    <string name="discoverable">Discoverable</string>
+    <string name="bluetooth_searching">Scan</string>
+    <string name="files_icon_title">Files</string>
+    <string name="report_icon_title">Report</string>
+    <string name="my_header_title">Functions Menu</string>
+    <string name="system_info_button">System Info</string>
+    <string name="crontab_button_title">Crontab</string>
+    <string name="change_DPI_guide">You can change DPI value as below: </string>
+
 </resources>

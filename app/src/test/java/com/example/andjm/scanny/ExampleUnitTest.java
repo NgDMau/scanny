@@ -1,4 +1,4 @@
-package com.example.andym.bluetooth3;
+package com.example.andjm.scanny;
 
 import org.junit.Test;
 

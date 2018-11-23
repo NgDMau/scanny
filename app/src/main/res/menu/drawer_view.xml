@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_bluetooth"
+            android:icon="@drawable/ic_bluetooth_searching_black_24dp"
+            android:title="@string/bluetooth_searching" />
+
+        <item
+            android:id="@+id/nav_files"
+            android:icon="@drawable/ic_folder_black_24dp"
+            android:title="@string/files_icon_title" />
+
+        <item
+            android:id="@+id/nav_report"
+            android:icon="@drawable/ic_report_black_24dp"
+            android:title="@string/report_icon_title" />
+
+    </group>
+
+
+
+</menu>

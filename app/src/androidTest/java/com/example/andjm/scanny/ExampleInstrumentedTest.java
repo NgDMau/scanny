@@ -1,4 +1,4 @@
-package com.example.andym.bluetooth3;
+package com.example.andjm.scanny;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
@@ -21,6 +21,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.example.andym.bluetooth3", appContext.getPackageName());
+        assertEquals("com.example.andjm.scanny", appContext.getPackageName());
     }
 }
