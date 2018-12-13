@@ -25,7 +25,9 @@ try:
         data = client_sock.recv(1024)
         if len(data) == 0: break
         print("received [%s]" % data)
-        process_message(str(data))
+        data = str(data)
+        if (data == "browsefile"):
+            server_sock.send("takenphoto.jpeg")
         server_sock.send("hello again")
 except IOError:
     pass
