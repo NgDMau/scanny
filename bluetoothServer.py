@@ -27,9 +27,20 @@ try:
         print("received [%s]" % data)
         data = str(data)
         if (data == "browsefile"):
-            server_sock.send("takenphoto.jpeg")
+            from os import listdir
+            from os.path import isfile, join
+            mypath = 'images/'
+            onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
+            stringlist = " ".join(onlyfiles)
+            stringlist = "filelist " + stringlist
+            print(stringlist)
+            server_sock.send(stringlist)
+        elif (data == "checkinfo_123456"):
+            
+
         server_sock.send("hello again")
-except IOError:
+except Exception as e:
+    print(e)
     pass
 
 print("disconnected")
