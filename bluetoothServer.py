@@ -26,7 +26,7 @@ try:
         if len(data) == 0: break
         print("received [%s]" % data)
         data = str(data)
-        if (data == "browsefile"):
+        if (data == "browsefile"):  # Browse images
             from os import listdir
             from os.path import isfile, join
             mypath = 'images/'
@@ -35,8 +35,12 @@ try:
             stringlist = "filelist " + stringlist
             print(stringlist)
             server_sock.send(stringlist)
-        elif (data == "checkinfo_123456"):
-            
+        elif (data == "checkinfo_123456"): # Check system info
+            with open('test.txt','r') as file:
+            systeminfo = file.readlines()
+            server_sock.send(systeminfo)
+        elif(data.split(" ")[0] == "transfer"):
+            filename = data.split(" ")[1]
 
         server_sock.send("hello again")
 except Exception as e:
