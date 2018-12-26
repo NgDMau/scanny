@@ -1,4 +1,20 @@
 from bluetooth import *
+from subprocess import call
+from threading import Thread
+import os
+
+def make_discoverable():
+    call(["bluetoothctl","discoverable","on"])
+    return
+def change_DPI():
+    call(['./changeDPI.sh'])
+    return
+
+def changeTime():
+    call(["./changeTime.sh"])
+    return
+    
+
 
 server_sock=BluetoothSocket( RFCOMM )
 server_sock.bind(("",PORT_ANY))
@@ -6,7 +22,7 @@ server_sock.listen(1)
 
 port = server_sock.getsockname()[1]
 
-uuid = "0000XXXX-0000-1000-8000-00805F9B34FB"
+uuid = "00001101-0000-1000-8000-00805F9B34FB"
 
 advertise_service( server_sock, "ahihi",
                    service_id = uuid,
@@ -25,8 +41,9 @@ try:
         data = client_sock.recv(1024)
         if len(data) == 0: break
         print("received [%s]" % data)
-        data = str(data)
-        if (data == "browsefile"):  # Browse images
+        print(type(data))
+        if(str(data) == "browsefile"):
+            print("browsefile")
             from os import listdir
             from os.path import isfile, join
             mypath = 'images/'
@@ -34,15 +51,48 @@ try:
             stringlist = " ".join(onlyfiles)
             stringlist = "filelist " + stringlist
             print(stringlist)
-            server_sock.send(stringlist)
-        elif (data == "checkinfo_123456"): # Check system info
-            with open('test.txt','r') as file:
-            systeminfo = file.readlines()
-            server_sock.send(systeminfo)
-        elif(data.split(" ")[0] == "transfer"):
-            filename = data.split(" ")[1]
-
-        server_sock.send("hello again")
+            client_sock.send(stringlist) 
+        elif(data=="checkinfo_123456"):        
+            dataDaily=''
+            myfile=open('/home/pi/test.txt', 'r') 
+            dataDaily=myfile.read()
+            print(str(dataDaily))
+            dataDaily = "checkinfo "+str(dataDaily)
+            client_sock.send(dataDaily)
+        else:
+            data = str(data).split(" ")
+            if(data[0]=="transfer"):
+                print("transfering..."+data[1])
+                fname = 'images/'+data[1]
+                from PIL import Image
+                im = Image.open(fname)
+                im.save(fname, dpi=(100,100))
+                with open(fname,'rb') as imageFile:
+                    strng = imageFile.read()
+                    #strng = bytearray(strng)
+                    client_sock.send(strng)
+                    print(strng)
+                    print(data[1]+' sent!')
+            elif(data[0]=="DPI"):
+                dpifile = open("outputDPI.txt","w")
+                dpifile.write(data[1])
+                dpifile.close()
+                thread_changeDPI = Thread(target = change_DPI)
+                thread_changeDPI.start()
+                thread_changeDPI.join()
+            elif(data[0] == "Time"):
+                tempList = data[1].split("-")
+                minute = tempList[len(tempList)-1]
+                hour   = tempList[len(tempList)-2]
+                time   = hour + " " + minute
+                fileTime = open('outputTime.txt','w')
+                fileTime.write(time)
+                fileTime.close()
+                thread_changeTime = Thread(target = changeTime)
+                thread_changeTime.start()
+                thread_changeTime.join()
+        #process_message(str(data))
+        #server_sock.send("hello again")
 except Exception as e:
     print(e)
     pass
@@ -58,3 +108,7 @@ def process_message(message):
 client_sock.close()
 server_sock.close()
 print("all done")
+
+if __name__ == "__main__":
+    thread_discoverable = Thread(target = make_discoverable)
+    thread_discoverable.start()
