@@ -22,5 +22,7 @@ Type any meesage you want to send to the Pi, the click button "Send". The conten
 In the terminal of the Pi, you will see "received[message content]".
 
 
+We send images or file by https://wiki.archlinux.org/index.php/ObexFTP
+
 
 
