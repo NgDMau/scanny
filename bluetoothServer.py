@@ -3,6 +3,9 @@ from subprocess import call
 from threading import Thread
 import os
 
+
+
+
 def make_discoverable():
     call(["bluetoothctl","discoverable","on"])
     return
@@ -14,6 +17,20 @@ def changeTime():
     call(["./changeTime.sh"])
     return
 
+def checkcode(givenstring, code):
+    for i in range(len(givenstring)-len(code)):
+        start_element = givenstring[i]
+        check_string  = start_element
+        print(start_element)
+        for j in range(len(code)-1):
+            check_string += givenstring[i+j+1]
+        print(check_string)
+        if check_string == code:
+            return code
+    return False
+
+code_list = ["browsefile", "checkinfo_123456", "transfer", "DPI", "Time"]
+
 def doBlue():
     server_sock=BluetoothSocket( RFCOMM )
     server_sock.bind(("",PORT_ANY))
@@ -23,7 +40,7 @@ def doBlue():
 
     uuid = "00001101-0000-1000-8000-00805F9B34FB"
 
-    advertise_service( server_sock, "ahihi",
+    advertise_service( server_sock, "NguyenDinhMau",
                     service_id = uuid,
                     service_classes = [ uuid, SERIAL_PORT_CLASS ],
                     profiles = [ SERIAL_PORT_PROFILE ], 
@@ -34,14 +51,17 @@ def doBlue():
 
     client_sock, client_info = server_sock.accept()
     print("Accepted connection from ", client_info)
-
+    
     try:
         while True:
             data = client_sock.recv(1024)
             if len(data) == 0: break
-            print("received [%s]" % data)
+            print(str(data))
             print(type(data))
-            if(str(data) == "browsefile"):
+            for code in code_list:
+                data = checkcode(str(data), code)
+
+            if(data == "browsefile"):
                 print("browsefile")
                 from os import listdir
                 from os.path import isfile, join
@@ -58,20 +78,20 @@ def doBlue():
                 print(str(dataDaily))
                 dataDaily = "checkinfo "+str(dataDaily)
                 client_sock.send(dataDaily)
+                #obexftp --nopath --noconn --uuid none --bluetooth 9C:2E:A1:9A:54:96 --channel 5 --put /images/8b8.jpg
             else:
                 data = str(data).split(" ")
                 if(data[0]=="transfer"):
                     print("transfering..."+data[1])
                     fname = 'images/'+data[1]
-                    from PIL import Image
-                    im = Image.open(fname)
-                    im.save(fname, dpi=(100,100))
-                    with open(fname,'rb') as imageFile:
-                        strng = imageFile.read()
-                        #strng = bytearray(strng)
-                        client_sock.send(strng)
-                        print(strng)
-                        print(data[1]+' sent!')
+                    import os
+                    part1 = "obexftp --nopath --noconn --uuid none --bluetooth "
+                    address = str(client_info[0])
+                    part2 = " --channel 5 --put "
+                    filename = data[1]
+                    command = part1 + address + part2 + filename
+                    os.sys(command)
+
                 elif(data[0]=="DPI"):
                     dpifile = open("outputDPI.txt","w")
                     dpifile.write(data[1])
@@ -90,6 +110,8 @@ def doBlue():
                     thread_changeTime = Thread(target = changeTime)
                     thread_changeTime.start()
                     thread_changeTime.join()
+                else:
+                    print("Cannot recognize command: "+str(data))
             #process_message(str(data))
             #server_sock.send("hello again")
     except Exception as e:
@@ -102,14 +124,10 @@ doBlue()
 
 print("disconnected")
 
-def process_message(message):
-    if(message == "checkinfo_123456"):
-        import os
-        os.system("sudo apt-get update")
-    return 
 
 
-print("all done")
+
+
 
 if __name__ == "__main__":
     thread_discoverable = Thread(target = make_discoverable)
