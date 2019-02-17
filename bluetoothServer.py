@@ -29,6 +29,14 @@ def checkcode(givenstring, code):
             return code
     return False
 
+def delRedundant(data):
+    data = str(data)
+    if(checkcode(data, "b'") != False) :
+        data = data.split("'")[1]
+        return data
+    else:
+        return data
+
 code_list = ["browsefile", "checkinfo_123456", "transfer", "DPI", "Time"]
 
 def doBlue():
@@ -58,8 +66,9 @@ def doBlue():
             if len(data) == 0: break
             print(str(data))
             print(type(data))
-            for code in code_list:
-                data = checkcode(str(data), code)
+            #for code in code_list:
+            #    result = checkcode(str(data), code)
+            data = delRedundant(data)
 
             if(data == "browsefile"):
                 print("browsefile")
