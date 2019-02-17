@@ -24,5 +24,7 @@ In the terminal of the Pi, you will see "received[message content]".
 
 We send images or file by https://wiki.archlinux.org/index.php/ObexFTP
 
+obexftp --nopath --noconn --uuid none --bluetooth MAC_address --channel channel --put file
+
 
 
