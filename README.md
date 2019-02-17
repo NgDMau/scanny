@@ -24,5 +24,9 @@ In the terminal of the Pi, you will see "received[message content]".
 
 We send images or file by https://wiki.archlinux.org/index.php/ObexFTP
 
+Find out the channel used for transfer file: sdptool search --bdaddr MAC_address OPUSH
+
+Then send the file: obexftp --nopath --noconn --uuid none --bluetooth MAC_address --channel channel --put file
+
 
 
