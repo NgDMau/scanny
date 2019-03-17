@@ -3,9 +3,6 @@ from subprocess import call
 from threading import Thread
 import os
 
-
-
-
 def make_discoverable():
     call(["bluetoothctl","discoverable","on"])
     return
@@ -96,11 +93,20 @@ def doBlue():
                     import os
                     part1 = "obexftp --nopath --noconn --uuid none --bluetooth "
                     address = str(client_info[0])
-                    part2 = " --channel 5 --put "
-                    filename = data[1]
-                    command = part1 + address + part2 + filename
-                    os.sys(command)
-
+                    part2 = " --channel 4  --put "
+                    command = part1 + address + part2 + fname
+                    print("gonna send")
+                    recur=0
+                    print("indented ")
+                    while(os.system(command) != 0 and recur < 10):
+                        try:
+                            #os.system(command)
+                            print("result code " + str(result))
+                            break
+                        except Exception as e:
+                            error = "error "+e
+                            client_sock.send(error)
+                            recur+=1
                 elif(data[0]=="DPI"):
                     dpifile = open("outputDPI.txt","w")
                     dpifile.write(data[1])
