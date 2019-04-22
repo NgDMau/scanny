@@ -2,9 +2,7 @@ from bluetooth import *
 from subprocess import call
 from threading import Thread
 import os
-
-
-
+import subprocess
 
 def make_discoverable():
     call(["bluetoothctl","discoverable","on"])
@@ -37,7 +35,28 @@ def delRedundant(data):
     else:
         return data
 
+def opush_channel(address):
+    part1 = "sdptool search --bdaddr "
+    part2 = " OPUSH | grep Channel > opush_channel.txt"
+    command = part1 + str(address) + part2
+    os.system(command)
+    with open("opush_channel.txt","r") as file:
+        string = file.read()
+    lst = [int(s) for s in string.split() if s.isdigit()]
+    if lst[0] is not None:
+        return lst[0]
+    else:
+        return 6
+
 code_list = ["browsefile", "checkinfo_123456", "transfer", "DPI", "Time"]
+
+def filetrans_obexftp(file_path, address):
+    channel = opush_channel(address)
+    part1 = "obexftp --nopath --noconn --uuid none --bluetooth "
+    part2 = " --channel " + str(channel) + " --put " + str(file_path)
+    os.system(part1+part2)
+
+    
 
 def doBlue():
     server_sock=BluetoothSocket( RFCOMM )
@@ -98,15 +117,16 @@ def doBlue():
                     address = str(client_info[0])
                     part2 = " --channel 5 --put "
                     filename = data[1]
-                    command = part1 + address + part2 + filename
+                    filetrans_obexftp(fname, address)
                     recur = 0
-                    os.system(command)
-                        try:
-                            os.system(command)
-                        except Exception as e:
-                            error = "error "+e
-                            client_sock.send(error)
-                            recur + = 1                     
+                    #os.system(command)
+                    #os.system(command)
+                    """try:
+                        os.system(command)
+                    except Exception as e:
+                        error = "error "+e
+                        client_sock.send(error)
+                        recur += 1"""                     
 
                 elif(data[0]=="DPI"):
                     dpifile = open("outputDPI.txt","w")
