@@ -1,0 +1,2 @@
+sdptool search --bdaddr MAC_address OPUSH 
+9C:2E:A1:9A:54:96

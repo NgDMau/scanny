@@ -4,8 +4,13 @@ from threading import Thread
 import os
 import subprocess
 
+info_file_path = '/home/pi/scanny/dailyLog.txt'
+image_folder_path = ""
+
+
 def make_discoverable():
     call(["bluetoothctl","discoverable","on"])
+    print("DISCOVERABLE IS ONNNNNNNN.....")
     return
 def change_DPI():
     call(['./changeDPI.sh'])
@@ -101,7 +106,7 @@ def doBlue():
                 client_sock.send(stringlist) 
             elif(data=="checkinfo_123456"):        
                 dataDaily=''
-                myfile=open('/home/pi/scanny/dailyLog.txt', 'r') 
+                myfile=open(info_file_path, 'r') 
                 dataDaily=myfile.read()
                 print(str(dataDaily))
                 dataDaily = "checkinfo "+str(dataDaily)
@@ -159,10 +164,6 @@ def doBlue():
 doBlue()
 
 print("disconnected")
-
-
-
-
 
 
 if __name__ == "__main__":
